@@ -115,8 +115,9 @@ class WebsocketSession:
             if not d: continue                  # if any data writable to TUN
             if self.peerAuthenticated:          # if peer authenticated
                 await self.fromWSQueue.put(d)
-            print("               --|%3d|-->  Local  %5d bytes" % (
+            print("               --|%3d|%s Local  %5d bytes" % (
                 self.wsid,
+                "--> " if self.peerAuthenticated else "-//-",
                 len(e)
             ))
 
