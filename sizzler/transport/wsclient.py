@@ -32,8 +32,7 @@ class WebsocketClient(SizzlerTransport):
                         path=uri,
                         key=self.key,
                         fromWSQueue=self.fromWSQueue,
-                        toWSQueue=self.toWSQueue,
-                        isInitiator=True
+                        toWSQueue=self.toWSQueue
                     )
             except Exception as e:
                 print(e)

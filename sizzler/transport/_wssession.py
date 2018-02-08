@@ -24,8 +24,7 @@ class WebsocketSession:
         path,
         key,
         fromWSQueue,
-        toWSQueue,
-        isInitiator=False
+        toWSQueue
     ):
         global wsid
         wsid += 1
