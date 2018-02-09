@@ -1,7 +1,27 @@
 #!/usr/bin/env python3
 
-import os
+"""
+------------------------------------------------------------------------------
+Check running environment:
+    * ensure running under Python 3.5+;
+    * ensure 3rd party packages installed.
+"""
+
 import sys
+if sys.version_info < (3, 5):
+    print("Error: you have to run Sizzler with Python 3.5 or higher version.")
+    exit(1)
+
+try:
+    import websockets
+    import nacl
+    import yaml
+except:
+    print("Error: one or more 3rd party package(s) not installed.")
+    print("To fix this, run:\n sudo pip3 install -r requirements.txt")
+    exit(1)
+
+import os
 import asyncio
 
 from .util.root import RootPriviledgeManager
