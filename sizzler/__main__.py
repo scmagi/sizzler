@@ -31,70 +31,76 @@ from .tun import SizzlerVirtualNetworkInterface
 from .transport.wsserver import WebsocketServer
 from .transport.wsclient import WebsocketClient
 
-"""
-------------------------------------------------------------------------------
-Parse command line arguments.
-"""
+def main():
 
-argv = parseCommandLineArguments(sys.argv[1:])
+    """
+    --------------------------------------------------------------------------
+    Parse command line arguments.
+    """
 
-ROLE = "server" if argv.server else "client"
-CONFIG = loadConfigFile(argv.server if ROLE == "server" else argv.client)
+    argv = parseCommandLineArguments(sys.argv[1:])
 
-"""
-------------------------------------------------------------------------------
-We need root priviledge.
-"""
+    ROLE = "server" if argv.server else "client"
+    CONFIG = loadConfigFile(argv.server if ROLE == "server" else argv.client)
 
-priviledgeManager = RootPriviledgeManager()
-if not priviledgeManager.isRoot():
-    print("Error: you need to run sizzler with root priviledge.")
-    exit(1)
+    """
+    --------------------------------------------------------------------------
+    We need root priviledge.
+    """
 
-"""
-------------------------------------------------------------------------------
-With root priviledge, we have to set up TUN device as soon as possible.
-"""
+    priviledgeManager = RootPriviledgeManager()
+    if not priviledgeManager.isRoot():
+        print("Error: you need to run sizzler with root priviledge.")
+        exit(1)
 
-tun = SizzlerVirtualNetworkInterface(
-    ip=CONFIG["ip"]["client" if ROLE == "client" else "server"],
-    dstip=CONFIG["ip"]["server" if ROLE == "client" else "client"]
-)
+    """
+    --------------------------------------------------------------------------
+    With root priviledge, we have to set up TUN device as soon as possible.
+    """
 
-"""
-------------------------------------------------------------------------------
-Now root is no longer required.
-"""
-
-try:
-    priviledgeManager.dropRoot()
-    assert not priviledgeManager.isRoot()
-except Exception as e:
-    print("Error: failed dropping root priviledge.")
-    print(e)
-    exit(1)
-
-"""
-------------------------------------------------------------------------------
-Start the server or client.
-"""
-
-if ROLE == "client":
-    transport = WebsocketClient(uris=CONFIG["client"], key=CONFIG["key"])
-
-else:
-    transport = WebsocketServer(
-        host=CONFIG["server"]["host"],
-        port=CONFIG["server"]["port"],
-        key=CONFIG["key"]
+    tun = SizzlerVirtualNetworkInterface(
+        ip=CONFIG["ip"]["client" if ROLE == "client" else "server"],
+        dstip=CONFIG["ip"]["server" if ROLE == "client" else "client"]
     )
 
-tun.connect(transport)
+    """
+    --------------------------------------------------------------------------
+    Now root is no longer required.
+    """
 
-"""
-------------------------------------------------------------------------------
-Start event loop.
-"""
+    try:
+        priviledgeManager.dropRoot()
+        assert not priviledgeManager.isRoot()
+    except Exception as e:
+        print("Error: failed dropping root priviledge.")
+        print(e)
+        exit(1)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(asyncio.gather(tun, transport))
+    """
+    --------------------------------------------------------------------------
+    Start the server or client.
+    """
+
+    if ROLE == "client":
+        transport = WebsocketClient(uris=CONFIG["client"], key=CONFIG["key"])
+
+    else:
+        transport = WebsocketServer(
+            host=CONFIG["server"]["host"],
+            port=CONFIG["server"]["port"],
+            key=CONFIG["key"]
+        )
+
+    tun.connect(transport)
+
+    """
+    --------------------------------------------------------------------------
+    Start event loop.
+    """
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.gather(tun, transport))
+
+
+if __name__ == "__main__":
+    main()

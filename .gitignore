@@ -1,4 +1,8 @@
+build/
+dist/
+*.egg-info
 *.sw?
 *.pyc
 *~
 *.yaml
+sizzler.pypirc
