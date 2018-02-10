@@ -16,6 +16,12 @@ are supported.
 
 Sizzler is MIT licensed.
 
+# Install
+
+Use PyPI to install:
+
+    sudo pip3 install sizzler
+
 # Usage
 
 `sizzler` can be run in command line:
