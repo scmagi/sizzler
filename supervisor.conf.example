@@ -1,0 +1,12 @@
+# This is an example for using Sizzler with Supervisor
+#
+# Uncomment one of the following lines starting with "#" to set up Sizzler
+# as a client or a server. Do not forget writing your own config file!
+# (call `sizzler -e` to see an example config file)
+
+
+[program:sizzler]
+#command=sizzler --server <YOUR_CONFIG_FILE_GOES_HERE>
+#command=sizzler --client <YOUR_CONFIG_FILE_GOES_HERE>
+user=root
+autorestart=true
