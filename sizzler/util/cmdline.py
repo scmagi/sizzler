@@ -53,8 +53,12 @@ ip:
 # The server will listen on the address and port as follow.
 
 server:
-    host: localhost
-    port: 8765
+    ws:
+        host: localhost
+        port: 8765
+    tcp:
+        host: localhost
+        port: 8766
 
 # The client will attempt accessing the server via following URI. This may
 # differ from above server settings, especially when you desire to use e.g.
@@ -63,9 +67,12 @@ server:
 # Listing multiple URIs will make client also use multiple connections.
 
 client:
-    - ws://123.1.1.1:8765   # suppose this is the server's Internet IP
-    - ws://example.com/foo  # if you can redirect this to 123.1.1.1:8765
-    - wss://example.org/bar # you may also use wss:// protocol
+    ws:
+        - ws://123.1.1.1:8765   # suppose this is the server's Internet IP
+        - ws://example.com/foo  # if you can redirect this to 123.1.1.1:8765
+        - wss://example.org/bar # you may also use wss:// protocol
+    tcp:
+        - [123.1.1.1, 8766]
 """
 
 #----------------------------------------------------------------------------#

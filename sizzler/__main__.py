@@ -16,6 +16,7 @@ try:
     import websockets
     import nacl
     import yaml
+    import Crypto
 except:
     print("Error: one or more 3rd party package(s) not installed.")
     print("To fix this, run:\n sudo pip3 install -r requirements.txt")
@@ -30,6 +31,8 @@ from .config.parser import loadConfigFile
 from .tun import SizzlerVirtualNetworkInterface
 from .transport.wsserver import WebsocketServer
 from .transport.wsclient import WebsocketClient
+from .transport.tcpserver import TCPServer
+from .transport.tcpclient import TCPClient
 
 def main():
 
@@ -81,25 +84,40 @@ def main():
     Start the server or client.
     """
 
-    if ROLE == "client":
-        transport = WebsocketClient(uris=CONFIG["client"], key=CONFIG["key"])
+    transportConfig = CONFIG[ROLE]
+    initializers = {
+        ("server", "ws"): lambda p: WebsocketServer(
+            host=p["host"], port=p["port"], key=CONFIG["key"]),
+        ("server", "tcp"): lambda p: TCPServer(
+            addr=(p["host"], p["port"]), key=CONFIG["key"]),
+        ("client", "ws"): lambda p: WebsocketClient(
+            uris=p, key=CONFIG["key"]),
+        ("client", "tcp"): lambda p: TCPClient(
+            addrs=p, key=CONFIG["key"]),
+    }
 
-    else:
-        transport = WebsocketServer(
-            host=CONFIG["server"]["host"],
-            port=CONFIG["server"]["port"],
-            key=CONFIG["key"]
-        )
+    transports = []
 
-    tun.connect(transport)
+    for transportType in transportConfig:
+        try:
+            initializer = initializers[(ROLE, transportType)]
+        except:
+            print("Invalid config file: %s is not a known transport type." %
+                transportType)
+            exit(1)
+        transport = initializer(transportConfig[transportType])
+        tun.connect(transport)
+        transports.append(transport)
 
     """
     --------------------------------------------------------------------------
     Start event loop.
     """
 
+    print("Running Sizzler now...")
+
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.gather(tun, transport))
+    loop.run_until_complete(asyncio.gather(tun, *transports))
 
 
 if __name__ == "__main__":

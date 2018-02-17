@@ -9,7 +9,7 @@ from ._tcpsession import TCPSession
 from ._transport import SizzlerTransport
 
 
-class WebsocketServer(SizzlerTransport):
+class TCPServer(SizzlerTransport):
 
     def __init__(self, addr=None, key=None):
         SizzlerTransport.__init__(self)
@@ -17,7 +17,6 @@ class WebsocketServer(SizzlerTransport):
         self.key = key
 
     async def __tcpHandler(self, reader, writer):
-        print("New connection: %s" % path)
         try:
             self.increaseConnectionsCount()
             await TCPSession(
@@ -30,8 +29,8 @@ class WebsocketServer(SizzlerTransport):
         except Exception as e:
             print(e)
         finally:
-            reader.close()
-            writer.close()
+#            reader.close()
+#            writer.close()
             self.decreaseConnectionsCount()
             print("One connection closed. Alive connections: %d" % \
                 self.connections

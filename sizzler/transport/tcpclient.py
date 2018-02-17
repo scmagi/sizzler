@@ -19,26 +19,25 @@ class TCPClient(SizzlerTransport):
         self.key = key
 
     async def __connect(self, addr):
+        print(addr)
         while True:
             try:
-                async with asyncio.open_connection(addr[0], addr[1]) as rw:
-                    reader, writer = rw
-                    self.increaseConnectionsCount()
-                    await TCPSession(
-                        reader=reader,
-                        writer=writer,
-                        key=self.key,
-                        fromWSQueue=self.fromWSQueue,
-                        toWSQueue=self.toWSQueue
-                    )
+                reader, writer = await asyncio.open_connection(
+                    addr[0], addr[1])
+                self.increaseConnectionsCount()
+                await TCPSession(
+                    reader=reader,
+                    writer=writer,
+                    key=self.key,
+                    fromWSQueue=self.fromWSQueue,
+                    toWSQueue=self.toWSQueue
+                )
             except Exception as e:
                 print(e)
             finally:
-                writer.close()
-                reader.close()
                 self.decreaseConnectionsCount()
                 print("Connection failed or broken. Try again in 5 seconds.")
-                await asyncio.sleep(5)
+            await asyncio.sleep(5)
 
     def __await__(self):
         assert self.toWSQueue != None and self.fromWSQueue != None
