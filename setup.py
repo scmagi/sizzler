@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name = "Sizzler",
-    version = "0.0.1",
+    version = "0.0.4",
     author = "Sogisha",
     author_email = "sogisha@protonmail.com",
     description = ("A VPN over WebSocket"),
@@ -20,6 +20,11 @@ setup(
     keywords = "asyncio VPN WebSocket TUN",
     url = "http://github.com/scmagi/sizzler",
     packages=find_packages(),
+    install_requires=[
+        "PyYaml",
+        "PyNaCl",
+        "websockets",
+    ],
     long_description=read('README.md'),
     entry_points="""
     [console_scripts]
