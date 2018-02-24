@@ -5,6 +5,7 @@ import websockets
 import os
 import sys
 import time
+from logging import info, debug, critical, exception
 
 import yaml
 
@@ -35,10 +36,10 @@ class WebsocketClient(SizzlerTransport):
                         toWSQueue=self.toWSQueue
                     )
             except Exception as e:
-                print(e)
+                debug("Client connection break, reason: %s" % e)
             finally:
                 self.decreaseConnectionsCount()
-                print("Connection failed or broken. Try again in 5 seconds.")
+                info("Connection failed or broken. Try again in 5 seconds.")
                 await asyncio.sleep(5)
 
     def __await__(self):

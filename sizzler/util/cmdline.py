@@ -85,6 +85,13 @@ def parseCommandLineArguments(args):
         <https://github.com/scmagi/sizzler>."""
     )
 
+    parser.add_argument(
+        "-l",
+        "--loglevel",
+        choices=["debug", "warning", "error", "critical", "info"],
+        default="info"
+    )
+
     job = parser.add_mutually_exclusive_group(required=True)
     
     job.add_argument(

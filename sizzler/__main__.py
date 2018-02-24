@@ -23,6 +23,7 @@ except:
 
 import os
 import asyncio
+import logging
 
 from .util.root import RootPriviledgeManager
 from .util.cmdline import parseCommandLineArguments
@@ -42,6 +43,7 @@ def main():
 
     ROLE = "server" if argv.server else "client"
     CONFIG = loadConfigFile(argv.server if ROLE == "server" else argv.client)
+    logging.basicConfig(level=argv.loglevel.upper())
 
     """
     --------------------------------------------------------------------------

@@ -4,6 +4,7 @@ import asyncio
 import websockets
 import time
 import sys
+from logging import info, debug, critical, exception
 
 from ._wssession import WebsocketSession
 from ._transport import SizzlerTransport
@@ -18,7 +19,7 @@ class WebsocketServer(SizzlerTransport):
         self.key = key
 
     async def __wsHandler(self, websocket, path):
-        print("New connection: %s" % path)
+        info("New connection: %s" % path)
         try:
             self.increaseConnectionsCount()
             await WebsocketSession(
@@ -29,12 +30,10 @@ class WebsocketServer(SizzlerTransport):
                 toWSQueue=self.toWSQueue
             )
         except Exception as e:
-            print(e)
+            debug("Server connection break, reason: %s" % e)
         finally:
             self.decreaseConnectionsCount()
-            print("One connection closed. Alive connections: %d" % \
-                self.connections
-            )
+            info("Current alive connections: %d" % self.connections)
 
     def __await__(self):
         assert self.toWSQueue != None and self.fromWSQueue != None

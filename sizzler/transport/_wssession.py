@@ -3,6 +3,7 @@
 import time
 import asyncio
 import hashlib
+from logging import info, debug, critical, exception
 
 from ..crypto.crypto import getCrypto
 from ..crypto.padding import RandomPadding
@@ -85,7 +86,7 @@ class WebsocketSession:
                 self.lastHeartbeat = max(self.lastHeartbeat, timestamp)
                 self.peerAuthenticated = True
         except:
-            print("Warning: invalid heartbeat!")
+            warning("Warning: invalid heartbeat!")
 
     async def __sendLocalHeartbeat(self):
         # Try to send local heartbeats.
@@ -115,7 +116,7 @@ class WebsocketSession:
             if not d: continue                  # if any data writable to TUN
             if self.peerAuthenticated:          # if peer authenticated
                 await self.fromWSQueue.put(d)
-            print("               --|%3d|%s Local  %5d bytes" % (
+            debug("               --|%3d|%s Local  %5d bytes" % (
                 self.wsid,
                 "--> " if self.peerAuthenticated else "-//-",
                 len(e)
@@ -128,7 +129,7 @@ class WebsocketSession:
             if not s: continue                  # if packer refuses, drop it
             e = await self.encryptor(s)         # encrypt packed data
             await self.websocket.send(e)        # send it
-            print("   Internet   <--|%3d|--          %5d bytes" % (
+            debug("   Internet   <--|%3d|--          %5d bytes" % (
                 self.wsid,
                 len(s)
             ))
